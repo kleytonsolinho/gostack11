@@ -4,6 +4,7 @@ import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
 
+import { useAuth } from '../../context/AuthContext';
 import getvalidationsErrors from '../../utils/getValidationsErrors';
 
 import Button from '../../components/Button';
@@ -13,29 +14,47 @@ import logoImg from '../../assets/logo.svg';
 
 import { Container, Content, Background } from './styles';
 
+interface SignInFormData {
+  email: string;
+  password: string;
+}
+
 const SignIn: React.FC = () => {
   const formRef = useRef<FormHandles>(null);
 
-  const handleSubmit = useCallback(async (data: string) => {
-    try {
-      formRef.current?.setErrors({});
+  const { signIn } = useAuth();
 
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required('E-mail é obrigatório')
-          .email('Digite um e-mail válido.'),
-        password: Yup.string().required('Senha é obrigatória.'),
-      });
+  const handleSubmit = useCallback(
+    async (data: SignInFormData) => {
+      try {
+        formRef.current?.setErrors({});
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
-    } catch (err) {
-      const errors = getvalidationsErrors(err);
+        const schema = Yup.object<{
+          email: string;
+          password: string;
+        }>().shape({
+          email: Yup.string()
+            .required('E-mail é obrigatório')
+            .email('Digite um e-mail válido.'),
+          password: Yup.string().required('Senha é obrigatória.'),
+        });
 
-      formRef.current?.setErrors(errors);
-    }
-  }, []);
+        /* await schema.validate(data, {
+          abortEarly: false,
+        }); */
+
+        signIn({
+          email: data.email,
+          password: data.password,
+        });
+      } catch (err) {
+        const errors = getvalidationsErrors(err);
+
+        formRef.current?.setErrors(errors);
+      }
+    },
+    [signIn],
+  );
 
   return (
     <Container>
