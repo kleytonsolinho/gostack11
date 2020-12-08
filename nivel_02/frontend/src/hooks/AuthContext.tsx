@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useState, useContext } from 'react';
+import { string } from 'yup';
 import api from '../services/api';
 
 interface AuthState {
@@ -32,7 +33,7 @@ const AuthProvider: React.FC = ({ children }) => {
   });
 
   const signIn = useCallback(async ({ email, password }) => {
-    const response = await api.post<{ token: string; user: string }>(
+    const response = await api.post<{ token: string; user: object }>(
       'sessions',
       {
         email,
@@ -66,7 +67,7 @@ function useAuth(): AuthContextData {
   const context = useContext(AuthContext);
 
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider.')
+    throw new Error('useAuth must be used within an AuthProvider.');
   }
 
   return context;

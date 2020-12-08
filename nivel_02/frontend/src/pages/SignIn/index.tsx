@@ -4,7 +4,7 @@ import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import * as Yup from 'yup';
 
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/AuthContext';
 import getvalidationsErrors from '../../utils/getValidationsErrors';
 
 import Button from '../../components/Button';
@@ -29,19 +29,16 @@ const SignIn: React.FC = () => {
       try {
         formRef.current?.setErrors({});
 
-        const schema = Yup.object<{
-          email: string;
-          password: string;
-        }>().shape({
+        const schema = Yup.object().shape({
           email: Yup.string()
             .required('E-mail é obrigatório')
             .email('Digite um e-mail válido.'),
           password: Yup.string().required('Senha é obrigatória.'),
         });
 
-        /* await schema.validate(data, {
+        await schema.validate(data, {
           abortEarly: false,
-        }); */
+        });
 
         signIn({
           email: data.email,
